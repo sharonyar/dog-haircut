@@ -1,22 +1,12 @@
-body {
-    margin: 0;
-    font-family: Arial, sans-serif;
-    background: linear-gradient(135deg, #1a237e, #0d47a1);
+.auth-page {
+    display: flex;
+    justify-content: center;
+    align-items: center;
     height: 100vh;
-    display: flex;
-    justify-content: center;
-    align-items: center;
+    background: linear-gradient(135deg, #1a237e, #0d47a1);
   }
   
-  .login-page {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 100%;
-    width: 100%;
-  }
-  
-  .login-card {
+  .auth-card {
     background: #fff;
     width: 350px;
     padding: 30px 20px;
@@ -25,18 +15,18 @@ body {
     text-align: center;
   }
   
-  .login-icon img {
+  .auth-icon img {
     width: 48px;
     height: 48px;
     margin-bottom: 20px;
   }
   
-  .login-form {
+  .auth-form {
     display: flex;
     flex-direction: column;
   }
   
-  .login-input {
+  .auth-input {
     margin-bottom: 15px;
     padding: 10px;
     border: 1px solid #ccc;
@@ -44,7 +34,7 @@ body {
     font-size: 14px;
   }
   
-  .login-button {
+  .auth-button {
     padding: 10px;
     background: #1e88e5;
     color: white;
@@ -55,7 +45,19 @@ body {
     transition: background 0.3s ease;
   }
   
-  .login-button:hover {
+  .auth-button:hover {
     background: #1565c0;
+  }
+  
+  .auth-link {
+    display: block;
+    margin-top: 10px;
+    color: #1e88e5;
+    text-decoration: none;
+    font-size: 14px;
+  }
+  
+  .auth-link:hover {
+    text-decoration: underline;
   }
   
