@@ -1,34 +1,23 @@
-import React from "react";
-import { useAuth } from "../contexts/AuthContext";
-import "../styles/AuthPage.css";
-import userLoginIcon from "../assets/user-login.png";  // ✅ Import logo correctly
+import React, { useEffect, useState } from "react";
 
 function DashboardPage() {
-  const { logout } = useAuth();
+  const [customers, setCustomers] = useState([]);
 
-  const customers = [
-    { id: 1, name: "Alice Johnson" },
-    { id: 2, name: "Bob Smith" },
-    { id: 3, name: "Charlie Davis" },
-    { id: 4, name: "Daisy Brown" },
-  ];
+  useEffect(() => {
+    fetch("http://localhost:5000/api/customers")
+      .then(response => response.json())
+      .then(data => setCustomers(data))
+      .catch(error => console.error("Error fetching customers:", error));
+  }, []);
 
   return (
-    <div className="auth-page">
-      <div className="auth-card">
-        <div className="dashboard-icon">
-          <img src={userLoginIcon} alt="Dashboard Icon" />
-        </div>
-        <h2>Customer Waiting List</h2>
-        <ul className="customer-list">
-          {customers.map((customer) => (
-            <li key={customer.id} className="customer-item">
-              {customer.name}
-            </li>
-          ))}
-        </ul>
-        <button onClick={logout} className="auth-button">Logout</button>
-      </div>
+    <div>
+      <h2>Customer List</h2>
+      <ul>
+        {customers.map((customer) => (
+          <li key={customer.id}>{customer.name}</li>
+        ))}
+      </ul>
     </div>
   );
 }

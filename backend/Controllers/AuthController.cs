@@ -1,18 +1,33 @@
-﻿using System;
+﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Authorization;
+using Backend.Services;
 
-[HttpPost("signup")]
-[AllowAnonymous]
-public IActionResult SignUp([FromBody] SignUpRequest request)
+namespace Backend.Controllers
 {
-    if (string.IsNullOrWhiteSpace(request.Username) || string.IsNullOrWhiteSpace(request.Password))
+    [ApiController]
+    [Route("api/[controller]")]  // ✅ This sets the route to /api/auth
+    public class AuthController : ControllerBase
     {
-        return BadRequest("Username and password are required.");
+        private readonly IJwtTokenService _jwtTokenService;
+
+        public AuthController(IJwtTokenService jwtTokenService)
+        {
+            _jwtTokenService = jwtTokenService;
+        }
+
+        [HttpPost("login")]
+        [AllowAnonymous]
+        public IActionResult Login([FromBody] LoginRequest request)
+        {
+            if (request.Username == "testuser" && request.Password == "password123")
+            {
+                var token = _jwtTokenService.GenerateToken(request.Username);
+                return Ok(new { token = token }); // ✅ Changed "Token" to "token"
+            }
+
+            return Unauthorized("Invalid username or password.");
+        }
     }
 
-    // Simulated database storage (replace with real database)
-    Console.WriteLine($"User registered: {request.Username}, Firstname: {request.Firstname}");
-
-    return Ok(new { message = "Signup successful! You can now log in." });
+    public record LoginRequest(string Username, string Password);
 }
-
-public record SignUpRequest(string Username, string Password, string Firstname);

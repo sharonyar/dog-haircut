@@ -1,15 +1,29 @@
 ﻿using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
-using Backend.Services; // ✅ Ensure correct namespace for services
+using Backend.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
-var key = "YourSuperSecureLongKey12345678901234"; // ✅ Ensure this is 32+ characters
+// ✅ Load the secret key from appsettings.json (better security)
+var key = builder.Configuration["JwtSettings:Secret"] ?? "YourSuperSecureLongKey12345678901234";
 
-builder.Services.AddControllers();
+// ✅ Add Database Context
+builder.Services.AddDbContext<DataContext>(options =>
+    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
-// ✅ Register JWT Authentication
+// ✅ Enable CORS to allow React frontend requests
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowFrontend",
+        policy => policy.WithOrigins("http://localhost:3000")
+                        .AllowAnyMethod()
+                        .AllowAnyHeader()
+                        .AllowCredentials());
+});
+
+// ✅ Register authentication with JWT
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options =>
     {
@@ -25,13 +39,23 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
         };
     });
 
-// ✅ Register JwtTokenService
+// ✅ Register services
 builder.Services.AddSingleton<IJwtTokenService, JwtTokenService>();
+
+// ✅ Add controllers
+builder.Services.AddControllers();
 
 var app = builder.Build();
 
+// ✅ Apply CORS policy
+app.UseCors("AllowFrontend");
+
+// ✅ Apply authentication & authorization middleware
 app.UseAuthentication();
 app.UseAuthorization();
+
+// ✅ Map API controllers
 app.MapControllers();
 
+// ✅ Run the app
 app.Run();
