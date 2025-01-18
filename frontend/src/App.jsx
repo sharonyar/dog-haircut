@@ -8,10 +8,10 @@ import DashboardPage from "./pages/DashboardPage";
 function App() {
   return (
     <AuthProvider>
-      <Router>
+      <Router>  {/* ✅ The ONLY <Router> in the app */}
         <Routes>
           <Route path="/" element={<LoginPage />} />
-          <Route path="/signup" element={<SignUpPage />} />  {/* ✅ Ensure Signup Route Exists */}
+          <Route path="/signup" element={<SignUpPage />} />
           <Route
             path="/dashboard"
             element={
