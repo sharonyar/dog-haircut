@@ -1,7 +1,7 @@
 import React from "react";
 import { useAuth } from "../contexts/AuthContext";
-import "../styles/AuthPage.css";  // ✅ Ensure the CSS is correctly imported
-import userLoginIcon from "../assets/user-login.png";  // ✅ Import image properly
+import "../styles/AuthPage.css";
+import userLoginIcon from "../assets/user-login.png";  // ✅ Import logo correctly
 
 function DashboardPage() {
   const { logout } = useAuth();
@@ -17,7 +17,7 @@ function DashboardPage() {
     <div className="auth-page">
       <div className="auth-card">
         <div className="dashboard-icon">
-          <img src={userLoginIcon} alt="Dashboard Icon" className="dashboard-logo" />
+          <img src={userLoginIcon} alt="Dashboard Icon" />
         </div>
         <h2>Customer Waiting List</h2>
         <ul className="customer-list">

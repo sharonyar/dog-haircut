@@ -1,28 +1,19 @@
-import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
-import { AuthProvider } from "./contexts/AuthContext";
-import ProtectedRoute from "./components/ProtectedRoute";
+import React from "react";
+import { Routes, Route } from "react-router-dom"; // ✅ Do NOT import BrowserRouter here
 import LoginPage from "./pages/LoginPage";
-import SignUpPage from "./pages/SignUpPage";
 import DashboardPage from "./pages/DashboardPage";
+import ProtectedRoute from "./components/ProtectedRoute";
 
 function App() {
   return (
-    <AuthProvider>
-      <Router>  {/* ✅ The ONLY <Router> in the app */}
-        <Routes>
-          <Route path="/" element={<LoginPage />} />
-          <Route path="/signup" element={<SignUpPage />} />
-          <Route
-            path="/dashboard"
-            element={
-              <ProtectedRoute>
-                <DashboardPage />
-              </ProtectedRoute>
-            }
-          />
-        </Routes>
-      </Router>
-    </AuthProvider>
+    <Routes>  {/* ✅ Only Routes here, no extra BrowserRouter */}
+      <Route path="/" element={<LoginPage />} />
+      <Route path="/dashboard" element={
+        <ProtectedRoute>
+          <DashboardPage />
+        </ProtectedRoute>
+      } />
+    </Routes>
   );
 }
 

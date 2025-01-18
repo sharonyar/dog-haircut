@@ -2,14 +2,20 @@ import React, { useState } from "react";
 import { useAuth } from "../contexts/AuthContext";
 import { Link, useNavigate } from "react-router-dom";
 import "../styles/AuthPage.css";
-import userLoginIcon from "../assets/user-login.png";  // ✅ Import the image
 
 function LoginPage() {
-  const { login } = useAuth();
+  const auth = useAuth();  // ✅ Call hooks at the top level
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const navigate = useNavigate();
+
+  if (!auth) {
+    console.error("AuthContext is not available! Ensure <AuthProvider> is used.");
+    return <p>Authentication system not initialized.</p>;  // ✅ Return JSX instead of skipping hook calls
+  }
+
+  const { login } = auth;
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -29,7 +35,7 @@ function LoginPage() {
     <div className="auth-page">
       <div className="auth-card">
         <div className="auth-icon">
-          <img src={userLoginIcon} alt="User Icon" />  {/* ✅ Use imported image */}
+          <img src="../assets/user-login.png" alt="User Icon" />
         </div>
         <h2>Login</h2>
         {error && <p className="error-message">{error}</p>}

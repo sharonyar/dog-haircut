@@ -1,6 +1,14 @@
 import React from "react";
 import ReactDOM from "react-dom/client";
 import App from "./App";
+import { BrowserRouter } from "react-router-dom";
+import { AuthProvider } from "./contexts/AuthContext"; // ✅ Import AuthProvider
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
-root.render(<App />);  // ✅ Only <App />, no <BrowserRouter>
+root.render(
+  <BrowserRouter>
+    <AuthProvider>  {/* ✅ Wrap everything inside AuthProvider */}
+      <App />
+    </AuthProvider>
+  </BrowserRouter>
+);
