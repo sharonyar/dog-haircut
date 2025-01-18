@@ -1,14 +1,14 @@
-﻿namespace Backend.Services  // ✅ Ensure this matches across all files
-{
-    using System;
-    using System.IdentityModel.Tokens.Jwt;
-    using System.Security.Claims;
-    using System.Text;
-    using Microsoft.IdentityModel.Tokens;
+﻿using System;
+using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
+using System.Text;
+using Microsoft.IdentityModel.Tokens;
 
+namespace Backend.Services
+{
     public interface IJwtTokenService
     {
-        string GenerateToken(string username);
+        string GenerateToken(User user); // ✅ Ensure this matches the interface
     }
 
     public class JwtTokenService : IJwtTokenService
@@ -17,14 +17,15 @@
         private const string Issuer = "your-app";
         private const string Audience = "your-audience";
 
-        public string GenerateToken(string username)
+        public string GenerateToken(User user) // ✅ Ensure this matches the interface
         {
             var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Key));
             var credentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256);
 
             var claims = new[]
             {
-                new Claim("username", username)
+                new Claim("userId", user.Id.ToString()), // ✅ Include UserId in token
+                new Claim("username", user.Username)
             };
 
             var token = new JwtSecurityToken(

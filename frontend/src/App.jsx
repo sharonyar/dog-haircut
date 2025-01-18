@@ -1,18 +1,25 @@
-import React from "react";
-import { Routes, Route } from "react-router-dom"; // ✅ Do NOT import BrowserRouter here
-import LoginPage from "./pages/LoginPage";
+import { Routes, Route, Navigate } from "react-router-dom";
 import DashboardPage from "./pages/DashboardPage";
-import ProtectedRoute from "./components/ProtectedRoute";
+import ProfilePage from "./pages/ProfilePage";
+import LoginPage from "./pages/LoginPage"
+import SignUpPage from "./pages/SignUpPage";
+import ProtectedRoute from "./components/ProtectedRoute"; // ✅ Import the authentication check
 
 function App() {
   return (
-    <Routes>  {/* ✅ Only Routes here, no extra BrowserRouter */}
-      <Route path="/" element={<LoginPage />} />
-      <Route path="/dashboard" element={
-        <ProtectedRoute>
-          <DashboardPage />
-        </ProtectedRoute>
-      } />
+    <Routes>
+      {/* ✅ Default route should be login */}
+      <Route path="/" element={<Navigate to="/login" />} />
+
+      {/* ✅ Public routes */}
+      <Route path="/login" element={<LoginPage />} />
+      <Route path="/signup" element={<SignUpPage />} />
+
+      {/* ✅ Protected routes (only logged-in users can access) */}
+      <Route element={<ProtectedRoute />}>
+        <Route path="/dashboard" element={<DashboardPage />} />
+        <Route path="/profile" element={<ProfilePage />} />
+      </Route>
     </Routes>
   );
 }
