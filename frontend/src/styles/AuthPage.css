@@ -1,21 +1,11 @@
-/* ✅ Fix logo size once and for all */
-.auth-icon img,
-.dashboard-icon img {
-  width: 48px !important;
-  height: 48px !important;
-  object-fit: contain;
-  display: block;
-  margin: 0 auto;
-}
-
-/* ✅ Ensure full-screen background */
+/* ✅ Consistent Background for Login & Signup */
 body, html {
   margin: 0;
   padding: 0;
   font-family: Arial, sans-serif;
   height: 100%;
-  background: linear-gradient(135deg, #1a237e, #0d47a1) !important;
-  background-size: cover !important;
+  background: linear-gradient(135deg, #1a237e, #0d47a1);
+  background-size: cover;
   background-repeat: no-repeat;
   background-attachment: fixed;
   display: flex;
@@ -23,38 +13,43 @@ body, html {
   align-items: center;
 }
 
-/* ✅ Make sure login and dashboard pages have the same background */
+/* ✅ Shared container for auth pages */
 .auth-page {
   display: flex;
   justify-content: center;
   align-items: center;
   width: 100%;
   height: 100vh;
-  background: linear-gradient(135deg, #1a237e, #0d47a1) !important;
-  background-size: cover !important;
 }
 
-
-/* ✅ Fix input fields stacking */
-.auth-form {
-  display: flex;
-  flex-direction: column !important;
-  align-items: center;
-  width: 100%;
+/* ✅ Shared card style for both pages */
+.auth-card {
+  background: white;
+  padding: 2rem;
+  border-radius: 10px;
+  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
+  text-align: center;
+  width: 350px;
 }
 
-/* ✅ Ensure inputs have correct spacing */
+/* ✅ Shared icon style */
+.auth-icon img {
+  width: 80px;
+  margin-bottom: 15px;
+}
+
+/* ✅ Shared input fields */
 .auth-input {
   width: 100%;
   max-width: 280px;
-  margin-bottom: 15px !important; /* ✅ Force spacing */
+  margin-bottom: 15px;
   padding: 10px;
   border: 1px solid #ccc;
   border-radius: 5px;
   font-size: 14px;
 }
 
-/* ✅ Ensure button matches */
+/* ✅ Shared button style */
 .auth-button {
   width: 100%;
   max-width: 280px;
@@ -71,3 +66,28 @@ body, html {
 .auth-button:hover {
   background: #1565c0;
 }
+
+/* ✅ Shared link style */
+.auth-switch {
+  margin-top: 10px;
+  font-size: 14px;
+}
+
+.auth-switch a {
+  color: #1e88e5;
+  text-decoration: none;
+}
+
+.auth-switch a:hover {
+  text-decoration: underline;
+}
+
+/* ✅ Error message styling */
+.error-message {
+  color: red;
+  font-size: 14px;
+  font-weight: bold;
+  margin-bottom: 10px;
+  text-align: center;
+}
+

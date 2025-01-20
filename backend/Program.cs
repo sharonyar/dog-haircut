@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using Backend.Services;
+using backend.Controllers;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -43,7 +44,9 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
 builder.Services.AddSingleton<IJwtTokenService, JwtTokenService>();
 
 // ✅ Add controllers
-builder.Services.AddControllers();
+//builder.Services.AddControllers();
+builder.Services.AddControllers().AddApplicationPart(typeof(ScheduleController).Assembly);
+
 
 var app = builder.Build();
 

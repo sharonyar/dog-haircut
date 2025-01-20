@@ -1,15 +1,17 @@
 import { Routes, Route, Navigate } from "react-router-dom";
 import DashboardPage from "./pages/DashboardPage";
 import ProfilePage from "./pages/ProfilePage";
-import LoginPage from "./pages/LoginPage"
+import LoginPage from "./pages/LoginPage";
 import SignUpPage from "./pages/SignUpPage";
 import ProtectedRoute from "./components/ProtectedRoute"; // ✅ Import the authentication check
 
 function App() {
+  const isAuthenticated = !!localStorage.getItem("token"); // ✅ Check if user is logged in
+
   return (
     <Routes>
-      {/* ✅ Default route should be login */}
-      <Route path="/" element={<Navigate to="/login" />} />
+      {/* ✅ Redirect to login if not authenticated */}
+      <Route path="/" element={<Navigate to={isAuthenticated ? "/dashboard" : "/login"} />} />
 
       {/* ✅ Public routes */}
       <Route path="/login" element={<LoginPage />} />

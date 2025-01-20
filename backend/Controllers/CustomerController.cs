@@ -11,26 +11,93 @@ public class CustomerController : ControllerBase
     {
         _context = context;
     }
-
     [HttpGet]
     public IActionResult GetAllCustomers()
     {
         var customers = _context.Users
-            .Where(u => !string.IsNullOrEmpty(u.Name)) // ✅ Only return users with names
             .Select(u => new
             {
                 u.Id,
-                u.Name // ✅ Only return Name (hide password)
+                u.Name,
+                AppointmentTime = u.AppointmentTime != null
+                    ? u.AppointmentTime.ToString()  // ✅ Convert to string
+                    : "No Appointment"
             })
             .ToList();
 
-        if (!customers.Any())
-        {
-            return NotFound("No customers found.");
-        }
-
         return Ok(customers);
     }
+
+
+
+    // ✅ Helper function to generate a default time if missing
+    private static string GenerateRandomTime()
+    {
+        Random rand = new Random();
+        int hour = rand.Next(8, 18);
+        int minute = rand.Next(0, 60);
+        return $"{hour:D2}:{minute:D2}"; // ✅ Format: HH:mm
+    }
+
+
+
+    [HttpPut("appointment")]
+    [Authorize]
+    public IActionResult SetAppointmentTime([FromBody] UpdateAppointmentRequest request)
+    {
+        int userId = GetUserIdFromToken();
+        var user = _context.Users.FirstOrDefault(u => u.Id == userId);
+
+        if (user == null)
+        {
+            return NotFound(new { message = "User not found." });
+        }
+
+        if (string.IsNullOrWhiteSpace(request.AppointmentTime))
+        {
+            return BadRequest(new { message = "Invalid appointment time." });
+        }
+
+        user.AppointmentTime = request.AppointmentTime; // ✅ Update appointment time
+        _context.Users.Update(user); // ✅ Ensure EF Core detects the change
+        _context.SaveChanges(); // ✅ Save the update
+
+        return Ok(new { message = "Appointment time updated successfully.", appointmentTime = user.AppointmentTime });
+    }
+
+    // ✅ DTO to receive appointment time from frontend
+    public class UpdateAppointmentRequest
+    {
+        public string AppointmentTime { get; set; }
+    }
+
+    // ✅ Extract `userId` from JWT Token
+    private int GetUserIdFromToken()
+    {
+        var userIdClaim = User.Claims.FirstOrDefault(c => c.Type == "userId");
+        return userIdClaim != null ? int.Parse(userIdClaim.Value) : 0;
+    }
+
+    [HttpDelete("appointment")]
+    [Authorize]
+    public IActionResult DeleteAppointment()
+    {
+        int userId = GetUserIdFromToken();
+        var user = _context.Users.FirstOrDefault(u => u.Id == userId);
+
+        if (user == null)
+        {
+            return NotFound(new { message = "User not found." });
+        }
+
+        _context.Users.Remove(user); // ✅ Completely remove user from database
+        _context.SaveChanges();
+
+        return Ok(new { message = "User deleted successfully." });
+    }
+
+
+
 
     [HttpPut("me")]
     [Authorize] // ✅ Requires authentication
@@ -52,12 +119,6 @@ public class CustomerController : ControllerBase
         return Ok(new { message = "Profile updated successfully." });
     }
 
-    // ✅ Extract `userId` from JWT Token
-    private int GetUserIdFromToken()
-    {
-        var userIdClaim = User.Claims.FirstOrDefault(c => c.Type == "userId");
-        return userIdClaim != null ? int.Parse(userIdClaim.Value) : 0;
-    }
 
     // ✅ DTO for updating user profile
     public class UpdateUserRequest
