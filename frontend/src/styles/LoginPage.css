@@ -1,0 +1,74 @@
+/* Ensure the background covers the full viewport */
+html, body {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: linear-gradient(to right, #4b6cb7, #182848); /* ✅ Full Page Gradient */
+}
+
+/* Center the login box */
+.login-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100vw;
+  height: 100vh;
+}
+
+/* Style the login box */
+.login-box {
+  background: white;
+  padding: 2rem;
+  border-radius: 10px;
+  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
+  text-align: center;
+  width: 350px;
+}
+
+/* Style the login icon */
+.login-icon {
+  width: 80px;
+  margin-bottom: 15px;
+}
+
+/* Input styling */
+.input-group {
+  margin: 10px 0;
+}
+
+.input-group input {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  font-size: 16px;
+}
+
+/* Login button */
+.login-button {
+  width: 100%;
+  padding: 10px;
+  background: #4b6cb7;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  font-size: 16px;
+  cursor: pointer;
+}
+
+.login-button:hover {
+  background: #3a5795;
+}
+
+/* Signup link */
+.signup-link {
+  color: #4b6cb7;
+  text-decoration: none;
+}
+
+.signup-link:hover {
+  text-decoration: underline;
+}
