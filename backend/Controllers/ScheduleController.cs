@@ -35,24 +35,31 @@
         [Authorize]
         public IActionResult AddAppointment([FromBody] CreateAppointmentRequest request)
         {
-            int userId = GetUserIdFromToken();
-
-            // ✅ Check if the user already has an appointment
-            if (_context.Schedules.Any(s => s.UserId == userId))
+            try
             {
-                return BadRequest(new { message = "You already have an appointment." }); // ✅ Return JSON
+                int userId = GetUserIdFromToken();
+
+                // ✅ Check if the user already has an appointment
+                if (_context.Schedules.Any(s => s.UserId == userId))
+                {
+                    return BadRequest(new { message = "You already have an appointment." }); // ✅ Return JSON
+                }
+
+                var newAppointment = new Schedule
+                {
+                    UserId = userId,
+                    Time = request.Time
+                };
+
+                _context.Schedules.Add(newAppointment);
+                _context.SaveChanges();
+
+                return Ok(newAppointment);
             }
-
-            var newAppointment = new Schedule
+            catch (Exception ex)
             {
-                UserId = userId,
-                Time = request.Time
-            };
-
-            _context.Schedules.Add(newAppointment);
-            _context.SaveChanges();
-
-            return Ok(newAppointment);
+                return StatusCode(500, new { message = "An error occurred while creating the appointment.", error = ex.Message });
+            }
         }
 
 

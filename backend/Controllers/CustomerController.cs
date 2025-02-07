@@ -1,81 +1,53 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using backend.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System;
+using System.Linq;
 
 [Route("api/customers")]
 [ApiController]
 public class CustomerController : ControllerBase
 {
-    private readonly DataContext _context;
+    private readonly AppointmentService _appointmentService;
 
-    public CustomerController(DataContext context)
+    public CustomerController(AppointmentService appointmentService)
     {
-        _context = context;
+        _appointmentService = appointmentService;
     }
+
     [HttpGet]
     public IActionResult GetAllCustomers()
     {
-        var customers = _context.Users
-            .Select(u => new
+        try
+        {
+            var customers = _appointmentService.GetAllCustomers();
+
+            if (!customers.Any())
             {
-                u.Id,
-                u.Name,
-                AppointmentTime = u.AppointmentTime != null
-                    ? u.AppointmentTime.ToString()  // ✅ Convert to string
-                    : "No Appointment"
-            })
-            .ToList();
+                return NotFound(new { message = "No customers found." });
+            }
 
-        return Ok(customers);
+            return Ok(customers);
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(500, new { message = "Error retrieving customers.", error = ex.Message });
+        }
     }
-
-
-
-    // ✅ Helper function to generate a default time if missing
-    private static string GenerateRandomTime()
-    {
-        Random rand = new Random();
-        int hour = rand.Next(8, 18);
-        int minute = rand.Next(0, 60);
-        return $"{hour:D2}:{minute:D2}"; // ✅ Format: HH:mm
-    }
-
-
 
     [HttpPut("appointment")]
     [Authorize]
     public IActionResult SetAppointmentTime([FromBody] UpdateAppointmentRequest request)
     {
         int userId = GetUserIdFromToken();
-        var user = _context.Users.FirstOrDefault(u => u.Id == userId);
+        string errorMessage;
 
-        if (user == null)
+        if (_appointmentService.SetAppointmentTime(userId, request.AppointmentTime, out errorMessage))
         {
-            return NotFound(new { message = "User not found." });
+            return Ok(new { message = "Appointment time updated successfully." });
         }
 
-        if (string.IsNullOrWhiteSpace(request.AppointmentTime))
-        {
-            return BadRequest(new { message = "Invalid appointment time." });
-        }
-
-        user.AppointmentTime = request.AppointmentTime; // ✅ Update appointment time
-        _context.Users.Update(user); // ✅ Ensure EF Core detects the change
-        _context.SaveChanges(); // ✅ Save the update
-
-        return Ok(new { message = "Appointment time updated successfully.", appointmentTime = user.AppointmentTime });
-    }
-
-    // ✅ DTO to receive appointment time from frontend
-    public class UpdateAppointmentRequest
-    {
-        public string AppointmentTime { get; set; }
-    }
-
-    // ✅ Extract `userId` from JWT Token
-    private int GetUserIdFromToken()
-    {
-        var userIdClaim = User.Claims.FirstOrDefault(c => c.Type == "userId");
-        return userIdClaim != null ? int.Parse(userIdClaim.Value) : 0;
+        return BadRequest(new { message = errorMessage });
     }
 
     [HttpDelete("appointment")]
@@ -83,48 +55,44 @@ public class CustomerController : ControllerBase
     public IActionResult DeleteAppointment()
     {
         int userId = GetUserIdFromToken();
-        var user = _context.Users.FirstOrDefault(u => u.Id == userId);
+        string errorMessage;
 
-        if (user == null)
+        if (_appointmentService.DeleteAppointment(userId, out errorMessage))
         {
-            return NotFound(new { message = "User not found." });
+            return Ok(new { message = "User deleted successfully." });
         }
 
-        _context.Users.Remove(user); // ✅ Completely remove user from database
-        _context.SaveChanges();
-
-        return Ok(new { message = "User deleted successfully." });
+        return BadRequest(new { message = errorMessage });
     }
-
-
-
 
     [HttpPut("me")]
-    [Authorize] // ✅ Requires authentication
+    [Authorize]
     public IActionResult EditMyProfile([FromBody] UpdateUserRequest request)
     {
-        int userId = GetUserIdFromToken(); // ✅ Get logged-in user ID
-        var user = _context.Users.FirstOrDefault(u => u.Id == userId);
+        int userId = GetUserIdFromToken();
+        string errorMessage;
 
-        if (user == null)
+        if (_appointmentService.EditUserProfile(userId, request.Name, out errorMessage))
         {
-            return NotFound("User not found.");
+            return Ok(new { message = "Profile updated successfully." });
         }
 
-        // ✅ Only allow changing `Name`
-        user.Name = request.Name;
-
-        _context.SaveChanges();
-
-        return Ok(new { message = "Profile updated successfully." });
+        return BadRequest(new { message = errorMessage });
     }
 
+    private int GetUserIdFromToken()
+    {
+        var userIdClaim = User.Claims.FirstOrDefault(c => c.Type == "userId");
+        return userIdClaim != null ? int.Parse(userIdClaim.Value) : 0;
+    }
 
-    // ✅ DTO for updating user profile
+    public class UpdateAppointmentRequest
+    {
+        public string AppointmentTime { get; set; }
+    }
+
     public class UpdateUserRequest
     {
         public string Name { get; set; }
     }
-
-
 }
